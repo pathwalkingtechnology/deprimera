@@ -51,11 +51,11 @@ const HomePage: NextPage = () => {
         {images?.map((image) => (
           <div key={image.name} style={{ margin: '10px' }}>
             <Image
-              src={new URL(`${bucket.url}/product-images/${image.name}`)}
-              width={200}
-              height={200}
-              alt={image.name}
-            />
+  src={new URL(`${bucket.url}/product-images/${image.name}`).toString()}
+  width={200}
+  height={200}
+  alt={image.name}
+/>
           </div>
         ))}
       </div>
