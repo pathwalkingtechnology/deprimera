@@ -1,22 +1,36 @@
 'use client';
 import type { NextPage } from 'next';
-import { createClient, bucket } from '../supabaseClient';
+import { createClient } from '../supabaseClient';
 import { useState, useEffect } from 'react';
 import UploadFile from '../components/UploadFile';
 import Image from 'next/image';
 
 const HomePage: NextPage = () => {
   const supabase = createClient();
+  const bucket = {
+    name: process.env.SUPABASE_BUCKET_NAME,
+    url: process.env.SUPABASE_BUCKET_URL,
+  };
 
   const [images, setImages] = useState([]);
 
   useEffect(() => {
     const fetchImages = async () => {
-      const { data: imagesData } = await supabase.storage.from(bucket.name).list();
-      setImages(imagesData);
+      if (!bucket.name) {
+        console.error('Bucket name no está definido');
+        return;
+      }
+
+      try {
+        const { data: imagesData } = await supabase.storage.from(bucket.name).list();
+        setImages(imagesData);
+      } catch (error) {
+        console.error(error);
+      }
     };
+
     fetchImages();
-  }, [supabase]);
+  }, [bucket.name, supabase]);
 
   return (
     <div>
@@ -27,7 +41,7 @@ const HomePage: NextPage = () => {
         {images.map((image) => (
           <div key={image.name} style={{ margin: '10px' }}>
             <Image
-              src={`${bucket.url}/${image.name}`}
+              src={`${bucket.url}/product-images/${image.name}`}
               width={200}
               height={200}
               alt={image.name}
