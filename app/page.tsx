@@ -5,19 +5,13 @@ import { useState, useEffect } from 'react';
 import UploadFile from '../components/UploadFile';
 import Image from 'next/image';
 
-interface FileObject {
-  name: string;
-  id: string;
-  // Agrega otras propiedades según sea necesario
-}
+const bucket = {
+  name: process.env.SUPABASE_BUCKET_NAME,
+  url: process.env.SUPABASE_BUCKET_URL,
+};
 
 const HomePage: NextPage = () => {
   const supabase = createClient();
-  const bucket = {
-    name: process.env.SUPABASE_BUCKET_NAME,
-    url: process.env.SUPABASE_BUCKET_URL,
-  };
-
   const [images, setImages] = useState<FileObject[] | null>(null);
 
   useEffect(() => {
@@ -51,7 +45,7 @@ const HomePage: NextPage = () => {
         {images?.map((image) => (
           <div key={image.name} style={{ margin: '10px' }}>
             <Image
-              src={`${bucket.url}/product-images/${image.name}`}
+              src={new URL(`${bucket.url}/product-images/${image.name}`)}
               width={200}
               height={200}
               alt={image.name}
