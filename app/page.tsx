@@ -5,6 +5,12 @@ import { useState, useEffect } from 'react';
 import UploadFile from '../components/UploadFile';
 import Image from 'next/image';
 
+interface FileObject {
+  name: string;
+  id: string;
+  // Agrega otras propiedades según sea necesario
+}
+
 const bucket = {
   name: process.env.SUPABASE_BUCKET_NAME,
   url: process.env.SUPABASE_BUCKET_URL,
