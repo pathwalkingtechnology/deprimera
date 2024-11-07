@@ -4,6 +4,7 @@ import { createClient } from '../supabaseClient';
 import { useState, useEffect } from 'react';
 import UploadFile from '../components/UploadFile';
 import Image from 'next/image';
+import type { FileObject } from '@supabase/supabase-js';
 
 const HomePage: NextPage = () => {
   const supabase = createClient();
@@ -12,7 +13,7 @@ const HomePage: NextPage = () => {
     url: process.env.SUPABASE_BUCKET_URL,
   };
 
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState<FileObject[] | null>(null);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -21,12 +22,16 @@ const HomePage: NextPage = () => {
         return;
       }
 
-      try {
-        const { data: imagesData } = await supabase.storage.from(bucket.name).list();
-        setImages(imagesData);
-      } catch (error) {
-        console.error(error);
-      }
+     try {
+  const { data: imagesData } = await supabase.storage.from(bucket.name).list();
+  if (imagesData) {
+    setImages(imagesData);
+  } else {
+    setImages([]);
+  }
+} catch (error) {
+  console.error(error);
+}
     };
 
     fetchImages();
