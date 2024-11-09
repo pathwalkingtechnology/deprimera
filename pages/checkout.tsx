@@ -52,7 +52,7 @@ export default function Checkout() {
       Total: $${carrito.reduce((total, item) => total + item.precio * item.cantidad, 0).toFixed(2)}
     `;
 
-    const numeroEmpresa = '5493764617711';
+    const numeroEmpresa = '5493884306254';
     const urlWhatsApp = `https://wa.me/${numeroEmpresa}?text=${encodeURIComponent(mensajeWhatsApp)}`;
 
     // Redirige a WhatsApp
