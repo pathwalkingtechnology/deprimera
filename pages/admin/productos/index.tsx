@@ -120,11 +120,15 @@ const handleImageUpload = async (product: Product) => {
               <button onClick={() => handleDelete(product.id)} className="delete-btn">
                 Eliminar
               </button>
-              <input
-                type="file"
-                onChange={(e) => setSelectedImage(e.target.files[0])}
-                accept="image/*"
-              />
+             <input
+  type="file"
+  onChange={(e) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedImage(e.target.files[0]);
+    }
+  }}
+  accept="image/*"
+/>
               <button onClick={() => handleImageUpload(product)} className="upload-btn">
                 Subir Imagen
               </button>
