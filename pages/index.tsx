@@ -21,11 +21,11 @@ interface Props {
 
 export async function getServerSideProps() {
   const { data: productos, error: errorProductos } = await supabase
-    .from('productos')
-    .select('*, categoria_nombre:categorias(nombre)');
+    .from('productos_deprimera')
+    .select('*, categoria_nombre:categorias_deprimera(nombre)');
 
   const { data: categorias, error: errorCategorias } = await supabase
-    .from('categorias')
+    .from('categorias_deprimera')
     .select('*');
 
   if (errorProductos || errorCategorias) {

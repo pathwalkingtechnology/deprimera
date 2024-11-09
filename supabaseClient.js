@@ -12,26 +12,21 @@ const supabaseService = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 // Funciones para productos
 export const fetchProducts = async () => {
-  const productos = await supabaseAnon
-    .from('productos')
-    .select('id, nombre, descripcion, precio, imagen, categoria_id');
+  const { data, error } = await supabaseAnon
+    .from('productos_deprimera')
+    .select('*, categoria_nombre:categorias_deprimera(nombre)');
 
-  const categorias = await supabaseAnon
-    .from('categorias')
-    .select('id, nombre');
-
-  const data = productos.map((producto) => {
-    const categoria = categorias.find((categoria) => categoria.id === producto.categoria_id);
-    return { ...producto, categoria_nombre: categoria.nombre };
-  });
+  if (error) {
+    throw new Error(error.message);
+  }
 
   return data;
 };
 
 export const fetchProductById = async (id) => {
   const { data, error } = await supabaseAnon
-    .from('productos')
-    .select('id, nombre, descripcion, precio, categoria_id, imagen')
+    .from('productos_deprimera')
+    .select('*, categoria_nombre:categorias_deprimera(nombre)')
     .eq('id', id)
     .single();
 
@@ -43,7 +38,7 @@ export const fetchProductById = async (id) => {
 
 export const addProduct = async (nombre, descripcion, precio, categoriaId, imageUrl) => {
   const { data, error } = await supabaseService
-    .from('productos')
+    .from('productos_deprimera')
     .insert([{ nombre, descripcion, precio, categoria_id: categoriaId, imagen: imageUrl }]);
 
   if (error) {
@@ -58,7 +53,7 @@ export const updateProduct = async (id, { nombre, descripcion, precio, imageUrl 
   if (imageUrl) updates.imagen = imageUrl;
 
   const { error } = await supabaseService
-    .from('productos')
+    .from('productos_deprimera')
     .update(updates)
     .eq('id', id);
 
@@ -68,18 +63,18 @@ export const updateProduct = async (id, { nombre, descripcion, precio, imageUrl 
 };
 
 export const deleteProduct = async (id) => {
-  const { error } = await supabaseService.from('productos').delete().eq('id', id);
+  const { error } = await supabaseService.from('productos_deprimera').delete().eq('id', id);
 
   if (error) {
     throw new Error(error.message);
   }
 };
 
-// Función para subir una imagen al bucket `product-images`
+// Función para subir una imagen al bucket `imagenes-productos`
 export const uploadImage = async (file) => {
   const filePath = `${Date.now()}_${file.name}`;
   const { data, error } = await supabaseService.storage
-    .from('product-images')
+    .from('imagenes-productos')
     .upload(filePath, file);
 
   if (error) {
@@ -87,7 +82,7 @@ export const uploadImage = async (file) => {
   }
 
   const { data: publicData } = supabaseService.storage
-    .from('product-images')
+    .from('imagenes-productos')
     .getPublicUrl(filePath);
 
   return publicData.publicUrl;
@@ -96,7 +91,7 @@ export const uploadImage = async (file) => {
 // Funciones para categorías
 export const fetchCategories = async () => {
   const { data, error } = await supabaseAnon
-    .from('categorias')
+    .from('categorias_deprimera')
     .select('id, nombre');
 
   if (error) {
@@ -108,7 +103,7 @@ export const fetchCategories = async () => {
 
 export const fetchCategoryById = async (id) => {
   const { data, error } = await supabaseAnon
-    .from('categorias')
+    .from('categorias_deprimera')
     .select('id, nombre')
     .eq('id', id)
     .single();
@@ -120,7 +115,7 @@ export const fetchCategoryById = async (id) => {
 };
 
 export const addCategory = async (nombre) => {
-  const { error } = await supabaseService.from('categorias').insert([{ nombre }]);
+  const { error } = await supabaseService.from('categorias_deprimera').insert([{ nombre }]);
 
   if (error) {
     throw new Error(error.message);
@@ -129,7 +124,7 @@ export const addCategory = async (nombre) => {
 
 export const updateCategory = async (id, nombre) => {
   const { error } = await supabaseService
-    .from('categorias')
+    .from('categorias_deprimera')
     .update({ nombre })
     .eq('id', id);
 
@@ -139,7 +134,7 @@ export const updateCategory = async (id, nombre) => {
 };
 
 export const deleteCategory = async (id) => {
-  const { error } = await supabaseService.from('categorias').delete().eq('id', id);
+  const { error } = await supabaseService.from('categorias_deprimera').delete().eq('id', id);
 
   if (error) {
     throw new Error(error.message);

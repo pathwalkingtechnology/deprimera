@@ -1,19 +1,21 @@
 .footer {
   background: linear-gradient(135deg, #013254, #15557b); /* Degradado de azul primario a azul secundario */
   color: white;
-  padding: 1.5rem 0;
+  padding: 2rem 0; /* Aumenta el padding para mejorar la legibilidad */
+  font-family: 'Open Sans', sans-serif; /* Establece una fuente clara y legible */
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
   text-align: center;
-  padding: 0 1rem;
+  padding: 0 2rem; /* Aumenta el padding para mejorar la legibilidad */
 }
 
 .text {
-  font-size: 1rem;
-  margin-bottom: 1rem;
+  font-size: 1.1rem; /* Aumenta el tamaño de fuente para mejorar la legibilidad */
+  margin-bottom: 1.5rem;
+  line-height: 1.5; /* Mejora la legibilidad del texto */
 }
 
 .signature {
@@ -21,11 +23,14 @@
   justify-content: center;
   align-items: center;
   text-decoration: none;
+  margin-bottom: 1rem; /* Agrega espacio entre la firma y el texto */
 }
 
 .image {
   cursor: pointer;
   transition: transform 0.3s ease;
+  width: 100px; /* Establece un ancho fijo para la imagen */
+  height: auto;
 }
 
 .image:hover {
@@ -35,7 +40,7 @@
 /* Responsivo */
 @media (max-width: 768px) {
   .text {
-    font-size: 0.875rem;
+    font-size: 1rem;
   }
 
   .image {

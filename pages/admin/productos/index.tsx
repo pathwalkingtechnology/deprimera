@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { fetchProducts, deleteProduct } from '../../../supabaseClient';
+import { supabase } from '../lib/supabase';
+
+const bucketName = 'imagenes-productos';
 
 interface Product {
   id: number;
@@ -16,16 +18,23 @@ const ProductList = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   useEffect(() => {
     const loadProducts = async () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await fetchProducts();
+        const { data, error } = await supabase
+          .from('productos_deprimera')
+          .select('*, categoria_nombre:categorias_deprimera(nombre)');
+
+        if (error) {
+          throw error;
+        }
+
         setProducts(data);
       } catch (error) {
-        // Casting error a tipo Error para acceder a .message
         const errorMessage = (error as Error).message || 'Error desconocido';
         console.error('Error al cargar productos:', errorMessage);
         setError('Hubo un problema al cargar los productos.');
@@ -38,13 +47,39 @@ const ProductList = () => {
   const handleDelete = async (id: number) => {
     if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
       try {
-        await deleteProduct(id);
+        await supabase.from('productos_deprimera').delete().eq('id', id);
         setProducts(products.filter((product) => product.id !== id));
       } catch (error) {
         const errorMessage = (error as Error).message || 'Error desconocido';
         console.error('Error al eliminar producto:', errorMessage);
         setError('No se pudo eliminar el producto.');
       }
+    }
+  };
+
+  const handleImageUpload = async (product: Product) => {
+    if (!selectedImage) {
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.storage
+        .from(bucketName)
+        .upload(`${product.id}_${selectedImage.name}`, selectedImage, {
+          contentType: selectedImage.type,
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      const imageUrl = supabase.storage.from(bucketName).getPublicUrl(data.path);
+      await supabase.from('productos_deprimera').update({ imagen: imageUrl }).eq('id', product.id);
+      setSelectedImage(null);
+    } catch (error) {
+      const errorMessage = (error as Error).message || 'Error desconocido';
+      console.error('Error al subir imagen:', errorMessage);
+      setError('No se pudo subir la imagen.');
     }
   };
 
@@ -83,6 +118,14 @@ const ProductList = () => {
               </Link>
               <button onClick={() => handleDelete(product.id)} className="delete-btn">
                 Eliminar
+              </button>
+              <input
+                type="file"
+                onChange={(e) => setSelectedImage(e.target.files[0])}
+                accept="image/*"
+              />
+              <button onClick={() => handleImageUpload(product)} className="upload-btn">
+                Subir Imagen
               </button>
             </div>
           </li>
