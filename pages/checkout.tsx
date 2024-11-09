@@ -26,6 +26,7 @@ export default function Checkout() {
     codigoPostal: '',
     telefono: '',
   });
+  const [mensaje, setMensaje] = useState<string | null>(null); // Estado para el mensaje de error o éxito
   const router = useRouter();
 
   useEffect(() => {
@@ -35,6 +36,12 @@ export default function Checkout() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Verifica que todos los campos estén completos
+    if (Object.values(formulario).some((campo) => campo === '')) {
+      setMensaje('Por favor completa todos los campos');
+      return;
+    }
 
     const mensajeWhatsApp = `
       ¡Nuevo Pedido!
@@ -62,8 +69,13 @@ export default function Checkout() {
     });
     localStorage.removeItem('carrito');
 
-    // Redirige a la página de confirmación
-    router.push('/confirmacion');
+    // Actualiza el mensaje de éxito
+    setMensaje('¡Pedido realizado exitosamente!');
+    // Redirige a la página de confirmación después de unos segundos
+    setTimeout(() => {
+      setMensaje(null); // Limpia el mensaje antes de redirigir
+      router.push('/confirmacion');
+    }, 3000);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,7 +138,7 @@ export default function Checkout() {
           Realizar Pedido
         </button>
       </form>
-      {mensaje && <p className="text-red-500">{mensaje}</p>}
+      {mensaje && <p className="text-red-500 mt-4">{mensaje}</p>}
     </div>
   );
 }

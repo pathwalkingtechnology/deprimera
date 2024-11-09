@@ -2,13 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Variables CSS */
+:root {
+  --color-principal: #648095;
+  --color-secundario: #FF5B31;
+  --color-fondo: #f9f9f9;
+  --fuente-principal: 'Arial', sans-serif;
+  --tamaño-fuente-base: 16px;
+}
+
 /* Estilos globales */
 html, body {
   margin: 0;
   padding: 0;
-  font-family: 'Arial', sans-serif;
-  background-color: #f9f9f9;
+  font-family: var(--fuente-principal);
+  background-color: var(--color-fondo);
   color: #333;
+  font-size: var(--tamaño-fuente-base);
 }
 
 /* Definición del contenedor principal */
@@ -19,18 +29,24 @@ html, body {
 }
 
 /* Estilos del botón global */
-button {
+.button {
   padding: 10px 20px;
-  background-color: #FF5B31; /* Naranja */
+  background-color: var(--color-secundario);
   border: none;
   color: white;
-  font-size: 16px;
+  font-size: var(--tamaño-fuente-base);
   cursor: pointer;
   border-radius: 5px;
 }
 
-button:hover {
-  background-color: #FF5B51; /* Naranja más claro */
+.button:hover {
+  background-color: #FF5B51;
+}
+
+/* Enlaces */
+a {
+  text-decoration: none;
+  color: var(--color-principal);
 }
 
 /* Formulario de checkout */
@@ -45,9 +61,9 @@ form label {
 
 form input {
   padding: 10px;
-  font-size: 16px;
+  font-size: var(--tamaño-fuente-base);
   margin-bottom: 15px;
-  border: 1px solid #D2D3D5; /* Gris */
+  border: 1px solid #D2D3D5;
   border-radius: 5px;
 }
 
@@ -78,11 +94,7 @@ img {
   }
 }
 
-/* Enlaces en el carrito */
-a {
-  text-decoration: none;
-  color: inherit;
-}
+/* Hero banner */
 .hero-banner {
   height: 400px;
   background-size: cover;
