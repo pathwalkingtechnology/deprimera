@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { supabaseAnon, supabaseService } from '../../supabaseClient';
+import { supabaseAnon, supabaseService } from '../../../supabaseClient';
 
 
 const bucketName = 'imagenes-productos';
