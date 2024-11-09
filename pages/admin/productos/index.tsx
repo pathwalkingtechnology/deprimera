@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { supabase } from '../../../supabaseClient';
+import { supabaseAnon, supabaseService } from '../../supabaseClient';
+
 
 const bucketName = 'imagenes-productos';
 
@@ -21,67 +22,67 @@ const ProductList = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   useEffect(() => {
-    const loadProducts = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const { data, error } = await supabase
-          .from('productos_deprimera')
-          .select('*, categoria_nombre:categorias_deprimera(nombre)');
-
-        if (error) {
-          throw error;
-        }
-
-        setProducts(data);
-      } catch (error) {
-        const errorMessage = (error as Error).message || 'Error desconocido';
-        console.error('Error al cargar productos:', errorMessage);
-        setError('Hubo un problema al cargar los productos.');
-      }
-      setLoading(false);
-    };
-    loadProducts();
-  }, []);
-
-  const handleDelete = async (id: number) => {
-    if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
-      try {
-        await supabase.from('productos_deprimera').delete().eq('id', id);
-        setProducts(products.filter((product) => product.id !== id));
-      } catch (error) {
-        const errorMessage = (error as Error).message || 'Error desconocido';
-        console.error('Error al eliminar producto:', errorMessage);
-        setError('No se pudo eliminar el producto.');
-      }
-    }
-  };
-
-  const handleImageUpload = async (product: Product) => {
-    if (!selectedImage) {
-      return;
-    }
-
+  const loadProducts = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const { data, error } = await supabase.storage
-        .from(bucketName)
-        .upload(`${product.id}_${selectedImage.name}`, selectedImage, {
-          contentType: selectedImage.type,
-        });
+      const { data, error } = await supabaseAnon
+        .from('productos_deprimera')
+        .select('*, categoria_nombre:categorias_deprimera(nombre)');
 
       if (error) {
         throw error;
       }
 
-      const imageUrl = supabase.storage.from(bucketName).getPublicUrl(data.path);
-      await supabase.from('productos_deprimera').update({ imagen: imageUrl }).eq('id', product.id);
-      setSelectedImage(null);
+      setProducts(data);
     } catch (error) {
       const errorMessage = (error as Error).message || 'Error desconocido';
-      console.error('Error al subir imagen:', errorMessage);
-      setError('No se pudo subir la imagen.');
+      console.error('Error al cargar productos:', errorMessage);
+      setError('Hubo un problema al cargar los productos.');
     }
+    setLoading(false);
   };
+  loadProducts();
+}, []);
+
+const handleDelete = async (id: number) => {
+  if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+    try {
+      await supabaseService.from('productos_deprimera').delete().eq('id', id);
+      setProducts(products.filter((product) => product.id !== id));
+    } catch (error) {
+      const errorMessage = (error as Error).message || 'Error desconocido';
+      console.error('Error al eliminar producto:', errorMessage);
+      setError('No se pudo eliminar el producto.');
+    }
+  }
+};
+
+const handleImageUpload = async (product: Product) => {
+  if (!selectedImage) {
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseService.storage
+      .from(bucketName)
+      .upload(`${product.id}_${selectedImage.name}`, selectedImage, {
+        contentType: selectedImage.type,
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    const imageUrl = supabaseService.storage.from(bucketName).getPublicUrl(data.path);
+    await supabaseService.from('productos_deprimera').update({ imagen: imageUrl }).eq('id', product.id);
+    setSelectedImage(null);
+  } catch (error) {
+    const errorMessage = (error as Error).message || 'Error desconocido';
+    console.error('Error al subir imagen:', errorMessage);
+    setError('No se pudo subir la imagen.');
+  }
+};
 
   if (loading) return <p>Cargando productos...</p>;
   if (error) return <p className="error">{error}</p>;

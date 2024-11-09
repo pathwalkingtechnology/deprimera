@@ -10,6 +10,8 @@ const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey);
 // Cliente de rol de servicio para operaciones protegidas
 const supabaseService = createClient(supabaseUrl, supabaseServiceRoleKey);
 
+export { supabaseAnon, supabaseService };
+
 // Funciones para productos
 export const fetchProducts = async () => {
   const { data, error } = await supabaseAnon
