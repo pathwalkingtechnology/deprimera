@@ -37,7 +37,7 @@ export default function Contacto() {
         {/* Información de contacto */}
         <div className="flex flex-col md:flex-row justify-around items-center bg-white p-6 rounded-lg shadow-lg mb-8">
           <div className="text-center md:text-left mb-4 md:mb-0">
-            <h2 className="text-2xl font-semibold text-[#15557b]">Mao Gráfica</h2>
+            <h2 className="text-2xl font-semibold text-[#15557b]">De Primera - Mayorista</h2>
             <p className="text-gray-600">Gobernador González 788, B° Constitución, Palpalá, Jujuy</p>
             <p className="text-gray-600">Teléfono: 3884306254</p>
             <p className="text-gray-600">Email: mgurrieri5@gmail.com</p>
