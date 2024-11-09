@@ -7,7 +7,7 @@ export default function Hero() {
       <section
         className={styles.hero}
         style={{
-          backgroundImage: "url('/promomao.avif')",
+          backgroundImage: "url('/banner_promo.jpg')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
