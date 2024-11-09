@@ -20,23 +20,27 @@ interface Props {
 }
 
 export async function getServerSideProps() {
-  const { data: productos, error } = await supabase
+  const { data: productos, error: errorProductos } = await supabase
     .from('productos')
     .select('*, categoria_nombre:categorias(nombre)');
 
-  if (error) {
-    console.error(error);
-    return { props: { productos: [] } };
-  }
-
-  // Obtener categorías y agregar nombre de categoría a cada producto
-  const categorias = await supabase
+  const { data: categorias, error: errorCategorias } = await supabase
     .from('categorias')
     .select('*');
 
+  if (errorProductos || errorCategorias) {
+    console.error(errorProductos || errorCategorias);
+    return { props: { productos: [] } };
+  }
+
+  // Comprobación para asegurarse de que categorias.data no sea null
+  if (!categorias) {
+    return { props: { productos: [] } };
+  }
+
   const productosConCategoria = productos.map((producto) => {
-    const categoria = categorias.data.find((categoria) => categoria.id === producto.categoria_id);
-    return { ...producto, categoria_nombre: categoria.nombre };
+    const categoria = categorias.find((categoria) => categoria.id === producto.categoria_id);
+    return { ...producto, categoria_nombre: categoria?.nombre || 'Categoría no encontrada' };
   });
 
   return {
