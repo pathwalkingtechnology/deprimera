@@ -25,7 +25,9 @@ const ProductList = () => {
         const data = await fetchProducts();
         setProducts(data);
       } catch (error) {
-        console.error('Error al cargar productos:', error.message);
+        // Casting error a tipo Error para acceder a .message
+        const errorMessage = (error as Error).message || 'Error desconocido';
+        console.error('Error al cargar productos:', errorMessage);
         setError('Hubo un problema al cargar los productos.');
       }
       setLoading(false);
@@ -39,7 +41,8 @@ const ProductList = () => {
         await deleteProduct(id);
         setProducts(products.filter((product) => product.id !== id));
       } catch (error) {
-        console.error('Error al eliminar producto:', error.message);
+        const errorMessage = (error as Error).message || 'Error desconocido';
+        console.error('Error al eliminar producto:', errorMessage);
         setError('No se pudo eliminar el producto.');
       }
     }
