@@ -22,7 +22,8 @@ interface Props {
 export async function getServerSideProps() {
   const { data: productos, error } = await supabase
     .from('productos')
-    .select('*, categoria_nombre:categorias(nombre)');
+    .select('*, categoria_nombre:categorias(nombre)')
+    .join('categorias', 'id', 'categoria_id');
 
   if (error) {
     console.error(error);
