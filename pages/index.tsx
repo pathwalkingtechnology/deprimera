@@ -22,16 +22,25 @@ interface Props {
 export async function getServerSideProps() {
   const { data: productos, error } = await supabase
     .from('productos')
-    .select('*, categoria_nombre:categorias(nombre)')
-    .join('categorias', 'id', 'categoria_id');
+    .select('*, categoria_nombre:categorias(nombre)');
 
   if (error) {
     console.error(error);
     return { props: { productos: [] } };
   }
 
+  // Obtener categorías y agregar nombre de categoría a cada producto
+  const categorias = await supabase
+    .from('categorias')
+    .select('*');
+
+  const productosConCategoria = productos.map((producto) => {
+    const categoria = categorias.data.find((categoria) => categoria.id === producto.categoria_id);
+    return { ...producto, categoria_nombre: categoria.nombre };
+  });
+
   return {
-    props: { productos },
+    props: { productos: productosConCategoria },
   };
 }
 
