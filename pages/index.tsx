@@ -73,7 +73,7 @@ export default function Home({ productos }: Props) {
       {/* Hero Banner */}
       <Link href="/contacto">
         <section
-          style={{ backgroundImage: "url('/promomao.avif')" }}
+          style={{ backgroundImage: "url('/banner_promo.jpg')" }}
           className="hero-banner hover:scale-105 transition-transform duration-300"
         />
       </Link>
