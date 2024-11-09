@@ -1,0 +1,31 @@
+.hero {
+  background-size: cover;
+  background-position: center;
+  height: 400px; /* Altura ajustada para desktop */
+  width: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.hero:hover {
+  transform: scale(1.02); /* Efecto de zoom suave */
+}
+
+/* Ajustes específicos para tablets y dispositivos móviles */
+@media (max-width: 1024px) {
+  .hero {
+    height: 300px; /* Altura para tablets */
+  }
+}
+
+/* Ajustes específicos para dispositivos móviles */
+@media (max-width: 640px) {
+  .hero {
+    height: 180px; /* Altura más compacta en móviles */
+    background-size: contain; /* Mantiene la imagen completa dentro del espacio reducido */
+    background-repeat: no-repeat;
+  }
+}
+

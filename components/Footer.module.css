@@ -1,0 +1,45 @@
+.footer {
+  background: linear-gradient(135deg, #013254, #15557b); /* Degradado de azul primario a azul secundario */
+  color: white;
+  padding: 1.5rem 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.text {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.signature {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+}
+
+.image {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.image:hover {
+  transform: scale(1.1); /* Efecto hover para la imagen */
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .text {
+    font-size: 0.875rem;
+  }
+
+  .image {
+    width: 80px;
+    height: auto;
+  }
+}
