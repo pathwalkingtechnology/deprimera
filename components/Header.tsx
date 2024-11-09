@@ -17,7 +17,7 @@ export default function Header({ carritoCount }: HeaderProps) {
 
         {/* Botón de Contacto */}
         <Link href="/contacto" className={styles.contactLink}>
-          <Image src="/contacto.png" alt="Contacto" width={50} height={50} className={styles.contactIcon} />
+          <Image src="/contacto2.png" alt="Contacto" width={50} height={50} className={styles.contactIcon} />
         </Link>
 
         {/* Carrito */}
