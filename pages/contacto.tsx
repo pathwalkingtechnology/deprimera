@@ -1,12 +1,8 @@
-TypeScript
-
 import { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-interface ContactoProps {}
-
-export default function Contacto(props: ContactoProps) {
+export default function Contacto() {
   // Estados para los datos del formulario de contacto
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
@@ -16,7 +12,6 @@ export default function Contacto(props: ContactoProps) {
   // Función para manejar el envío del formulario
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     // Aquí se podría integrar con un servicio de envío de correos o backend
     console.log({ nombre, email, mensaje });
     setEnviado(true);
@@ -31,19 +26,18 @@ export default function Contacto(props: ContactoProps) {
     <div className="bg-[#f9f9f9]">
       {/* Encabezado */}
       <Header />
-
       {/* Contenido principal de contacto */}
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-[#013254] text-center mb-6">Contáctanos</h1>
-        
         {/* Información de contacto */}
         <div className="flex flex-col md:flex-row justify-around items-center bg-white p-6 rounded-lg shadow-lg mb-8">
           <div className="text-center md:text-left mb-4 md:mb-0">
             <h2 className="text-2xl font-semibold text-[#15557b]">Mao Gráfica</h2>
-            <p className="text-gray-600">Palpalá, Jujuy - Argentina</p>
-            <p className="text-gray-600">Email: maograficaok@gmail.com</p>
+            <p className="text-gray-600">Gobernador González 788, B° Constitución, Palpalá, Jujuy</p>
+            <p className="text-gray-600">Teléfono: 3884306254</p>
+            <p className="text-gray-600">Email: mgurrieri5@gmail.com</p>
+            <p className="text-gray-600">Contacto: Marcos Gurrieri</p>
           </div>
-          
           {/* Google Maps */}
           <div className="w-full md:w-1/2 h-64 rounded-lg overflow-hidden shadow-md">
             <iframe
@@ -51,7 +45,7 @@ export default function Contacto(props: ContactoProps) {
               width="100%"
               height="100%"
               frameBorder="0"
-              allowFullScreen=""
+              allowFullScreen
               aria-hidden="false"
               tabIndex="0"
               title="Ubicación de Mao Gráfica"
@@ -84,6 +78,7 @@ export default function Contacto(props: ContactoProps) {
                 required
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-[#15557b]"
               />
+            </div>
             <div>
               <label htmlFor="mensaje" className="block text-gray-700 font-medium">Mensaje</label>
               <textarea
@@ -92,7 +87,7 @@ export default function Contacto(props: ContactoProps) {
                 onChange={(e) => setMensaje(e.target.value)}
                 required
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-[#15557b]"
-              ></textarea>
+              />
             </div>
             <button
               type="submit"
@@ -108,7 +103,6 @@ export default function Contacto(props: ContactoProps) {
           </form>
         </div>
       </div>
-
       {/* Pie de página */}
       <Footer />
     </div>

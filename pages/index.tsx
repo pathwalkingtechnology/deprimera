@@ -11,6 +11,8 @@ interface Producto {
   descripcion: string;
   imagen: string;
   precio: number;
+  categoria_id: number;
+  categoria_nombre: string;
 }
 
 interface Props {
@@ -20,7 +22,7 @@ interface Props {
 export async function getServerSideProps() {
   const { data: productos, error } = await supabase
     .from('productos')
-    .select('*');
+    .select('*, categoria_nombre:categoria(nombre)');
 
   if (error) {
     console.error(error);
@@ -80,17 +82,20 @@ export default function Home({ productos }: Props) {
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {productosFiltrados.map((producto) => (
             <li key={producto.id} className="border p-4 rounded-lg shadow-lg bg-white">
-              <img
-                src={producto.imagen}
-                alt={producto.nombre}
-                className="w-full h-48 object-cover mb-4 rounded-lg"
-              />
+              <Image
+  src={producto.imagen}
+  alt={producto.nombre}
+  className="w-full h-48 object-cover mb-4 rounded-lg"
+/>
               <h2 className="text-2xl font-semibold text-[#15557b]">
                 {producto.nombre}
               </h2>
               <p className="text-gray-600 mb-2">{producto.descripcion}</p>
               <p className="text-lg font-bold text-[#FF5B31]">
                 $ {producto.precio.toFixed(2)}
+              </p>
+              <p className="text-md text-gray-600">
+                Categoría: {producto.categoria_nombre}
               </p>
               <button
                 onClick={() => agregarAlCarrito(producto)}

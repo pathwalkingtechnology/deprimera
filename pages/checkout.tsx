@@ -7,15 +7,25 @@ interface Producto {
   cantidad: number;
 }
 
+interface Formulario {
+  nombre: string;
+  direccion: string;
+  ciudad: string;
+  provincia: string;
+  codigoPostal: string;
+  telefono: string;
+}
+
 export default function Checkout() {
   const [carrito, setCarrito] = useState<Producto[]>([]);
-  const [nombre, setNombre] = useState('');
-  const [direccion, setDireccion] = useState('');
-  const [ciudad, setCiudad] = useState('');
-  const [provincia, setProvincia] = useState('');
-  const [codigoPostal, setCodigoPostal] = useState('');
-  const [telefono, setTelefono] = useState('');
-  const [mensaje, setMensaje] = useState('');
+  const [formulario, setFormulario] = useState<Formulario>({
+    nombre: '',
+    direccion: '',
+    ciudad: '',
+    provincia: '',
+    codigoPostal: '',
+    telefono: '',
+  });
   const router = useRouter();
 
   useEffect(() => {
@@ -28,30 +38,36 @@ export default function Checkout() {
 
     const mensajeWhatsApp = `
       ¡Nuevo Pedido!
-      Nombre: ${nombre}
-      Dirección: ${direccion}, ${ciudad}, ${provincia}, ${codigoPostal}
-      Teléfono: ${telefono}
+      Nombre: ${formulario.nombre}
+      Dirección: ${formulario.direccion}, ${formulario.ciudad}, ${formulario.provincia}, ${formulario.codigoPostal}
+      Teléfono: ${formulario.telefono}
       Productos: ${carrito.map((producto) => `${producto.nombre} x${producto.cantidad}`).join(', ')}
       Total: $${carrito.reduce((total, item) => total + item.precio * item.cantidad, 0).toFixed(2)}
     `;
 
-    const numeroEmpresa = '5493884072024';
+    const numeroEmpresa = '5493764617711';
     const urlWhatsApp = `https://wa.me/${numeroEmpresa}?text=${encodeURIComponent(mensajeWhatsApp)}`;
 
     // Redirige a WhatsApp
     window.location.href = urlWhatsApp;
 
     // Limpia el formulario y el carrito
-    setNombre('');
-    setDireccion('');
-    setCiudad('');
-    setProvincia('');
-    setCodigoPostal('');
-    setTelefono('');
+    setFormulario({
+      nombre: '',
+      direccion: '',
+      ciudad: '',
+      provincia: '',
+      codigoPostal: '',
+      telefono: '',
+    });
     localStorage.removeItem('carrito');
 
     // Redirige a la página de confirmación
     router.push('/confirmacion');
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormulario({ ...formulario, [e.target.name]: e.target.value });
   };
 
   return (
@@ -60,44 +76,50 @@ export default function Checkout() {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
+          name="nombre"
           placeholder="Nombre"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
+          value={formulario.nombre}
+          onChange={handleChange}
           required
         />
         <input
           type="text"
+          name="direccion"
           placeholder="Dirección"
-          value={direccion}
-          onChange={(e) => setDireccion(e.target.value)}
+          value={formulario.direccion}
+          onChange={handleChange}
           required
         />
         <input
           type="text"
+          name="ciudad"
           placeholder="Ciudad"
-          value={ciudad}
-          onChange={(e) => setCiudad(e.target.value)}
+          value={formulario.ciudad}
+          onChange={handleChange}
           required
         />
         <input
           type="text"
+          name="provincia"
           placeholder="Provincia"
-          value={provincia}
-          onChange={(e) => setProvincia(e.target.value)}
+          value={formulario.provincia}
+          onChange={handleChange}
           required
         />
         <input
           type="text"
+          name="codigoPostal"
           placeholder="Código Postal"
-          value={codigoPostal}
-          onChange={(e) => setCodigoPostal(e.target.value)}
+          value={formulario.codigoPostal}
+          onChange={handleChange}
           required
         />
         <input
           type="tel"
+          name="telefono"
           placeholder="Teléfono"
-          value={telefono}
-          onChange={(e) => setTelefono(e.target.value)}
+          value={formulario.telefono}
+          onChange={handleChange}
           required
         />
         <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-700">

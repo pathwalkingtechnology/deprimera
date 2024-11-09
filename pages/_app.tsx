@@ -3,12 +3,16 @@ import "@/styles/globals.css";
 interface MyAppProps {
   Component: React.FC;
   pageProps: {
-    [key: string]: any;
+    [key: string]: unknown; // Cambia 'any' a 'unknown'
   };
 }
 
 function MyApp({ Component, pageProps }: MyAppProps) {
-  return <Component {...pageProps} />;
+  return (
+    <div className="container">
+      <Component {...pageProps} />
+    </div>
+  );
 }
 
-export default MyApp;
+export default MyApp

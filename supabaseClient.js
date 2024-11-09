@@ -12,13 +12,19 @@ const supabaseService = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 // Funciones para productos
 export const fetchProducts = async () => {
-  const { data, error } = await supabaseAnon
+  const productos = await supabaseAnon
     .from('productos')
-    .select('id, nombre, descripcion, precio, categoria_id, imagen');
+    .select('id, nombre, descripcion, precio, imagen, categoria_id');
 
-  if (error) {
-    throw new Error(error.message);
-  }
+  const categorias = await supabaseAnon
+    .from('categorias')
+    .select('id, nombre');
+
+  const data = productos.map((producto) => {
+    const categoria = categorias.find((categoria) => categoria.id === producto.categoria_id);
+    return { ...producto, categoria_nombre: categoria.nombre };
+  });
+
   return data;
 };
 
