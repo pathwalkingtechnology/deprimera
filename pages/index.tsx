@@ -22,7 +22,7 @@ interface Props {
 export async function getServerSideProps() {
   const { data: productos, error } = await supabase
     .from('productos')
-    .select('*, categoria_nombre:categoria(nombre)');
+    .select('*, categoria_nombre:categorias(nombre)');
 
   if (error) {
     console.error(error);
@@ -76,7 +76,7 @@ export default function Home({ productos }: Props) {
 
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8 text-[#013254] text-center">
-          Bienvenidos a Mao Store
+          Bienvenidos a De Primera Mayorista
         </h1>
 
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
