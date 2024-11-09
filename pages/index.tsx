@@ -99,7 +99,9 @@ export default function Home({ productos }: Props) {
               <Image
   src={producto.imagen}
   alt={producto.nombre}
-  className="w-full h-48 object-cover mb-4 rounded-lg"
+  layout="responsive"
+  width={400}
+  height={300}
 />
               <h2 className="text-2xl font-semibold text-[#15557b]">
                 {producto.nombre}
