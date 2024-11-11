@@ -1,5 +1,8 @@
+// /pages/checkout.tsx
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Header2 from '../components/Header2';
+import Footer from '../components/Footer';
 
 interface Producto {
   nombre: string;
@@ -26,7 +29,7 @@ export default function Checkout() {
     codigoPostal: '',
     telefono: '',
   });
-  const [mensaje, setMensaje] = useState<string | null>(null); 
+  const [mensaje, setMensaje] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -37,11 +40,13 @@ export default function Checkout() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // Verificación de que todos los campos están completos
     if (Object.values(formulario).some((campo) => campo === '')) {
       setMensaje('Por favor completa todos los campos');
       return;
     }
 
+    // Crear el mensaje de WhatsApp
     const mensajeWhatsApp = `
       ¡Nuevo Pedido!
       Nombre: ${formulario.nombre}
@@ -53,11 +58,12 @@ export default function Checkout() {
       Total: $${carrito.reduce((total, item) => total + item.precio * item.cantidad, 0).toFixed(2)}
     `;
 
+    // Redirigir a WhatsApp
     const numeroEmpresa = '5493884306254';
     const urlWhatsApp = `https://wa.me/${numeroEmpresa}?text=${encodeURIComponent(mensajeWhatsApp)}`;
-
     window.location.href = urlWhatsApp;
 
+    // Limpiar el formulario y el carrito
     setFormulario({
       nombre: '',
       direccion: '',
@@ -70,25 +76,79 @@ export default function Checkout() {
 
     setMensaje('¡Pedido realizado exitosamente!');
     setTimeout(() => {
-      setMensaje(null); 
+      setMensaje(null);
       router.push('/confirmacion');
     }, 3000);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormulario({ ...formulario, [e.target.name]: e.target.value });
+  // Control de cambio en los campos del formulario
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormulario((prevFormulario) => ({ ...prevFormulario, [name]: value }));
   };
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold mb-4">Checkout</h1>
-      <form onSubmit={handleSubmit}>
-        {/* Aquí se incluyen los campos del formulario */}
-        <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-          Realizar Pedido
-        </button>
-      </form>
-      {mensaje && <p className="text-red-500 mt-4">{mensaje}</p>}
+    <div>
+      <Header2 />
+      <div className="container mx-auto px-4 py-6">
+        <h1 className="text-2xl font-bold mb-4">Checkout</h1>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="nombre"
+            value={formulario.nombre}
+            onChange={handleInputChange}
+            placeholder="Nombre"
+            className="border p-2 mb-4 w-full"
+          />
+          <input
+            type="text"
+            name="direccion"
+            value={formulario.direccion}
+            onChange={handleInputChange}
+            placeholder="Dirección"
+            className="border p-2 mb-4 w-full"
+          />
+          <input
+            type="text"
+            name="ciudad"
+            value={formulario.ciudad}
+            onChange={handleInputChange}
+            placeholder="Ciudad"
+            className="border p-2 mb-4 w-full"
+          />
+          <input
+            type="text"
+            name="provincia"
+            value={formulario.provincia}
+            onChange={handleInputChange}
+            placeholder="Provincia"
+            className="border p-2 mb-4 w-full"
+          />
+          <input
+            type="text"
+            name="codigoPostal"
+            value={formulario.codigoPostal}
+            onChange={handleInputChange}
+            placeholder="Código Postal"
+            className="border p-2 mb-4 w-full"
+          />
+          <input
+            type="text"
+            name="telefono"
+            value={formulario.telefono}
+            onChange={handleInputChange}
+            placeholder="Teléfono"
+            className="border p-2 mb-4 w-full"
+          />
+
+          <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+            Realizar Pedido
+          </button>
+        </form>
+        {mensaje && <p className="text-red-500 mt-4">{mensaje}</p>}
+      </div>
+      <Footer />
     </div>
   );
 }

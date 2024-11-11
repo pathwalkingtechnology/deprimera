@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Header from '../components/Header';
+import Header2 from '../components/Header2';
 import Footer from '../components/Footer';
 
 export default function Confirmacion() {
@@ -25,7 +25,7 @@ export default function Confirmacion() {
 
   return (
     <div className="container mx-auto px-4 py-6 flex flex-col items-center">
-      <Header />
+      <Header2 />
       <h1 className="text-2xl font-bold mb-4">¡Gracias por tu pedido!</h1>
       <p className="text-lg">Tu pedido ha sido enviado correctamente. Nos pondremos en contacto contigo en breve.</p>
       <p className="text-lg">Redirigiendo a la página principal en {contador} segundos...</p>
