@@ -1,5 +1,3 @@
-// pages/admin/productos/nuevo.tsx
-
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/router';
 import { addProduct, uploadImage, fetchCategories } from '../../../supabaseClient';
@@ -10,10 +8,10 @@ interface Categoria {
 }
 
 const NewProduct = () => {
-  const [nombre, setNombre] = useState<string>('');
-  const [descripcion, setDescripcion] = useState<string>('');
-  const [precio, setPrecio] = useState<string>('');
-  const [categoriaId, setCategoriaId] = useState<string>('');
+  const [nombre, setNombre] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [precio, setPrecio] = useState('');
+  const [categoriaId, setCategoriaId] = useState('');
   const [imagen, setImagen] = useState<File | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +24,7 @@ const NewProduct = () => {
         const data = await fetchCategories();
         setCategorias(data);
       } catch (error) {
-        console.error('Error al cargar categorías:', (error as Error).message);
+        console.error('Error al cargar categorías:', error);
       }
     };
     loadCategories();
@@ -38,28 +36,18 @@ const NewProduct = () => {
     setSuccess(null);
 
     try {
-      if (imagen && !['image/jpeg', 'image/png'].includes(imagen.type)) {
-        setError('Solo se permiten imágenes en formato JPEG o PNG');
-        return;
-      }
-
       let imageUrl: string | null = null;
       if (imagen) {
-        const url = await uploadImage(imagen);
-        if (!url) {
-          setError('Error al subir la imagen');
-          return;
-        }
-        imageUrl = url;
+        imageUrl = await uploadImage(imagen);
       }
 
-      await addProduct(
+      await addProduct({
         nombre,
         descripcion,
-        parseFloat(precio),
-        parseInt(categoriaId, 10),
-        imageUrl
-      );
+        precio: parseFloat(precio),
+        categoria_id: parseInt(categoriaId),
+        imagen: imageUrl
+      });
 
       setSuccess('Producto agregado exitosamente');
       setTimeout(() => router.push('/admin/productos'), 1000);
@@ -80,7 +68,7 @@ const NewProduct = () => {
       <form onSubmit={handleSubmit} className="form">
         {error && <p className="error">{error}</p>}
         {success && <p className="success">{success}</p>}
-        
+
         <div className="form-group">
           <label>Nombre</label>
           <input

@@ -9,7 +9,6 @@ interface Producto {
   precio: number;
   imagen: string | null;
   categoria_id: number | null;
-  categoria_nombre: { nombre: string };
 }
 
 const EditProduct = () => {
@@ -20,7 +19,6 @@ const EditProduct = () => {
     precio: 0,
     imagen: null,
     categoria_id: null,
-    categoria_nombre: { nombre: '' },
   });
   const [imagen, setImagen] = useState<File | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -28,19 +26,17 @@ const EditProduct = () => {
   const { id } = router.query;
 
   useEffect(() => {
-    if (id) {
-      const loadProduct = async () => {
+    const loadProduct = async () => {
+      if (id) {
         try {
-          const product = await fetchProductById(id);
-          if (product) {
-            setProducto(product);
-          } 
+          const product = await fetchProductById(id as string);
+          if (product) setProducto(product);
         } catch (error) {
           console.error('Error al cargar producto:', error);
         }
-      };
-      loadProduct();
-    }
+      }
+    };
+    loadProduct();
   }, [id]);
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -48,7 +44,7 @@ const EditProduct = () => {
     setSuccess(null);
 
     try {
-      let imageUrl = null;
+      let imageUrl = producto.imagen;
       if (imagen) {
         if (!['image/jpeg', 'image/png'].includes(imagen.type)) {
           alert('Solo se permiten imágenes en formato JPEG o PNG');
@@ -57,14 +53,15 @@ const EditProduct = () => {
         imageUrl = await uploadImage(imagen);
       }
 
-      await updateProduct(id, {
+      await updateProduct(producto.id, {
         nombre: producto.nombre,
         descripcion: producto.descripcion,
         precio: producto.precio,
         imagen: imageUrl,
+        categoria_id: producto.categoria_id
       });
+
       setSuccess('Producto actualizado exitosamente');
-      
       setTimeout(() => router.push('/admin/productos'), 1000);
     } catch (error) {
       console.error('Error al actualizar el producto:', error);
@@ -125,20 +122,73 @@ const EditProduct = () => {
             id="imagen"
             accept="image/jpeg, image/png"
             onChange={(e) => {
-  const file = e.target.files?.[0];
-  if (file) {
-    setImagen(file);
-  } else {
-    setImagen(null);
-  }
-}}
+              const file = e.target.files?.[0];
+              setImagen(file || null);
+            }}
             className="input-file"
           />
         </div>
 
         <button type="submit" className="submit-btn">Actualizar Producto</button>
       </form>
-    
+      <style jsx>{`
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #f9f9f9;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+          text-align: center;
+          color: #333;
+        }
+        .error {
+          color: #ff434d;
+          text-align: center;
+          margin-bottom: 10px;
+        }
+        .success {
+          color: #00afef;
+          text-align: center;
+          margin-bottom: 10px;
+        }
+        .form {
+          display: flex;
+          flex-direction: column;
+        }
+        .form-group {
+          margin-bottom: 15px;
+        }
+        label {
+          display: block;
+          margin-bottom: 5px;
+          font-weight: bold;
+          color: #2a4760;
+        }
+        .input, .textarea {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+        .input-file {
+          width: 100%;
+        }
+        .submit-btn {
+          padding: 10px;
+          background-color: #00afef;
+          color: #fff;
+          border: none;
+          border-radius: 4px;
+          font-size: 16px;
+          cursor: pointer;
+        }
+        .submit-btn:hover {
+          background-color: #008fc9;
+        }
+      `}</style>
     </div>
   );
 };
