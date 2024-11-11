@@ -23,8 +23,8 @@ const EditProduct = () => {
     categoria_nombre: { nombre: '' },
   });
   const [imagen, setImagen] = useState<File | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const [error, setError] = useState<string | null>(null);
+  // @ts-nocheck
+  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
   const { id } = router.query;
