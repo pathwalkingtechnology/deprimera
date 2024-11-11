@@ -48,15 +48,18 @@ export default function Checkout() {
 
     // Crear el mensaje de WhatsApp
     const mensajeWhatsApp = `
-      ¡Nuevo Pedido!
-      Nombre: ${formulario.nombre}
-      Dirección: ${formulario.direccion}, ${formulario.ciudad}, ${formulario.provincia}, ${formulario.codigoPostal}
-      Teléfono: ${formulario.telefono}
-      Productos: ${carrito
-        .map((producto) => `${producto.nombre} x${producto.cantidad} - $${(producto.precio * producto.cantidad).toFixed(2)}`)
-        .join(', ')}
-      Total: $${carrito.reduce((total, item) => total + item.precio * item.cantidad, 0).toFixed(2)}
-    `;
+  ¡Nuevo Pedido!
+  Nombre: ${formulario.nombre}
+  Dirección: ${formulario.direccion}, ${formulario.ciudad}, ${formulario.provincia}, ${formulario.codigoPostal}
+  Teléfono: ${formulario.telefono}
+  Productos: ${carrito
+    .map((producto) => {
+      const cantidad = producto.cantidad || 1; // Asegura que la cantidad mínima sea 1
+      return `${producto.nombre} x${cantidad} - $${(producto.precio * cantidad).toFixed(2)}`;
+    })
+    .join(', ')}
+  Total: $${carrito.reduce((total, item) => total + (item.precio * (item.cantidad || 1)), 0).toFixed(2)}
+`;
 
     // Redirigir a WhatsApp
     const numeroEmpresa = '5493884306254';
