@@ -10,12 +10,14 @@ interface Producto {
   precio: number;
   imagen: string | null;
   categoria_id: number | null;
+  categoria_nombre: string;
 }
 
 const ProductoList = () => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   useEffect(() => {
     const loadProductos = async () => {
@@ -24,11 +26,14 @@ const ProductoList = () => {
       try {
         const { data, error } = await supabaseAnon
           .from('productos_deprimera')
-          .select('*, categoria_id');
+          .select('*, categoria_nombre:categorias_deprimera(nombre)');
 
         if (error) throw error;
+
         setProductos(data);
       } catch (error) {
+        const errorMessage = (error as Error).message || 'Error desconocido';
+        console.error('Error al cargar productos:', errorMessage);
         setError('Hubo un problema al cargar los productos.');
       }
       setLoading(false);
@@ -37,19 +42,49 @@ const ProductoList = () => {
   }, []);
 
   const handleDeleteProducto = async (id: number) => {
+    if (!supabaseService) {
+      console.error('El cliente supabaseService no está disponible. Verifica SUPABASE_SERVICE_ROLE_KEY en tu archivo .env.local.');
+      alert('Error: No se puede eliminar el producto porque el cliente de Supabase no está configurado.');
+      return;
+    }
+
     if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
       try {
         await supabaseService.from('productos_deprimera').delete().eq('id', id);
         setProductos(productos.filter((producto) => producto.id !== id));
       } catch (error) {
-        alert(`Error al eliminar el producto: ${error.message}`);
+        const errorMessage = (error as Error).message || 'Error desconocido';
+        console.error('Error al eliminar el producto:', errorMessage);
+        alert(`Error al eliminar el producto: ${errorMessage}`);
       }
+    }
+  };
+
+  const handleImageUpload = async (producto: Producto) => {
+    if (!selectedImage) return;
+
+    try {
+      const imageUrl = await uploadImage(selectedImage);
+      if (!supabaseService) {
+        console.error('El cliente supabaseService no está disponible. Verifica SUPABASE_SERVICE_ROLE_KEY en tu archivo .env.local.');
+        alert('Error: No se puede subir la imagen porque el cliente de Supabase no está configurado.');
+        return;
+      }
+      
+      await supabaseService.from('productos_deprimera').update({ imagen: imageUrl }).eq('id', producto.id);
+
+      setProductos(productos.map((p) => (p.id === producto.id ? { ...p, imagen: imageUrl } : p)));
+      setSelectedImage(null);
+    } catch (error) {
+      const errorMessage = (error as Error).message || 'Error desconocido';
+      console.error('Error al subir imagen:', errorMessage);
+      setError('No se pudo subir la imagen.');
+      console.log(producto.categoria_nombre);
     }
   };
 
   if (loading) return <p>Cargando productos...</p>;
   if (error) return <p className="error">{error}</p>;
-
   return (
     <div className="container">
       <h1>Lista de Productos</h1>
@@ -63,8 +98,9 @@ const ProductoList = () => {
             <div className="product-info">
               <p><strong>Nombre:</strong> {producto.nombre}</p>
               <p><strong>Descripción:</strong> {producto.descripcion}</p>
-              <p><strong>Precio:</strong> ${producto.precio.toFixed(2)}</p>
-              {producto.imagen && (
+              <p><strong>Precio:</strong> ${producto.precio ? producto.precio.toFixed(2) : 'No disponible'}</p>
+              <p><strong>Categoría:</strong> {Object.values(producto.categoria_nombre)[0]}</p>
+               {producto.imagen && (
                 <Image
                   src={producto.imagen}
                   alt={producto.nombre}
@@ -74,16 +110,31 @@ const ProductoList = () => {
                 />
               )}
             </div>
+
             <div className="action-buttons">
               <Link href={`/admin/productos/${producto.id}`}>
                 <button className="edit-btn">Editar</button>
-              </Link>
-              <button onClick={() => handleDeleteProducto(producto.id)} className="delete-btn">Eliminar</button>
-            </div>
-          </li>
-        ))}
-      </ul>
-       <style jsx>{`
+  </Link>
+  <button onClick={() => handleDeleteProducto(producto.id)} className="delete-btn">
+    Eliminar
+  </button>
+  <input
+    type="file"
+    onChange={(e) => {
+      if (e.target.files && e.target.files[0]) {
+        setSelectedImage(e.target.files[0]);
+      }
+    }}
+    accept="image/*"
+  />
+  <button onClick={() => handleImageUpload(producto)} className="upload-btn">
+    Subir Imagen
+  </button>
+</div>
+            </li>
+          ))}
+        </ul>
+        <style jsx>{`
         .container {
           max-width: 600px;
           margin: 0 auto;
@@ -141,8 +192,8 @@ const ProductoList = () => {
           background-color: #008fc9;
         }
       `}</style>
-    </div>
-  );
-};
-
-export default ProductoList;
+      </div>
+    );
+  };
+  
+  export default ProductoList;
