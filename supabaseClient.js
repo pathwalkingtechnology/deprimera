@@ -75,19 +75,14 @@ export const deleteProduct = async (id) => {
 // Función para subir una imagen al bucket `imagenes-productos`
 export const uploadImage = async (file) => {
   const filePath = `${Date.now()}_${file.name}`;
-  const { data, error } = await supabaseService.storage
+  const { error: uploadError } = await supabaseService.storage
     .from('imagenes-productos')
     .upload(filePath, file);
 
-  if (error) {
-    throw new Error('Error al subir la imagen: ' + error.message);
-  }
+  if (uploadError) throw new Error('Error al subir la imagen: ' + uploadError.message);
 
-  const { data: publicData } = supabaseService.storage
-    .from('imagenes-productos')
-    .getPublicUrl(filePath);
-
-  return publicData.publicUrl;
+  const publicUrl = `${process.env.SUPABASE_BUCKET_URL}/${filePath}`;
+  return publicUrl;
 };
 
 // Funciones para categorías

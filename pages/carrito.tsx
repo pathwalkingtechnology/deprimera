@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 interface Producto {
   nombre: string;
@@ -40,6 +42,7 @@ export default function Carrito() {
 
   return (
     <div className="container mx-auto px-4 py-6">
+      <Header />
       <h1 className="text-2xl font-bold mb-4">Carrito de Compras</h1>
       {carrito.length === 0 ? (
         <p className="text-lg">Tu carrito está vacío.</p>
@@ -87,6 +90,7 @@ export default function Carrito() {
           </div>
         </>
       )}
+      <Footer />
     </div>
   );
 }

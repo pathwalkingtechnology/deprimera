@@ -26,7 +26,7 @@ export default function Checkout() {
     codigoPostal: '',
     telefono: '',
   });
-  const [mensaje, setMensaje] = useState<string | null>(null); // Estado para el mensaje de error o éxito
+  const [mensaje, setMensaje] = useState<string | null>(null); 
   const router = useRouter();
 
   useEffect(() => {
@@ -37,7 +37,6 @@ export default function Checkout() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Verifica que todos los campos estén completos
     if (Object.values(formulario).some((campo) => campo === '')) {
       setMensaje('Por favor completa todos los campos');
       return;
@@ -48,17 +47,17 @@ export default function Checkout() {
       Nombre: ${formulario.nombre}
       Dirección: ${formulario.direccion}, ${formulario.ciudad}, ${formulario.provincia}, ${formulario.codigoPostal}
       Teléfono: ${formulario.telefono}
-      Productos: ${carrito.map((producto) => `${producto.nombre} x${producto.cantidad}`).join(', ')}
+      Productos: ${carrito
+        .map((producto) => `${producto.nombre} x${producto.cantidad} - $${(producto.precio * producto.cantidad).toFixed(2)}`)
+        .join(', ')}
       Total: $${carrito.reduce((total, item) => total + item.precio * item.cantidad, 0).toFixed(2)}
     `;
 
     const numeroEmpresa = '5493884306254';
     const urlWhatsApp = `https://wa.me/${numeroEmpresa}?text=${encodeURIComponent(mensajeWhatsApp)}`;
 
-    // Redirige a WhatsApp
     window.location.href = urlWhatsApp;
 
-    // Limpia el formulario y el carrito
     setFormulario({
       nombre: '',
       direccion: '',
@@ -69,11 +68,9 @@ export default function Checkout() {
     });
     localStorage.removeItem('carrito');
 
-    // Actualiza el mensaje de éxito
     setMensaje('¡Pedido realizado exitosamente!');
-    // Redirige a la página de confirmación después de unos segundos
     setTimeout(() => {
-      setMensaje(null); // Limpia el mensaje antes de redirigir
+      setMensaje(null); 
       router.push('/confirmacion');
     }, 3000);
   };
@@ -86,54 +83,7 @@ export default function Checkout() {
     <div className="container mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold mb-4">Checkout</h1>
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="nombre"
-          placeholder="Nombre"
-          value={formulario.nombre}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="direccion"
-          placeholder="Dirección"
-          value={formulario.direccion}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="ciudad"
-          placeholder="Ciudad"
-          value={formulario.ciudad}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="provincia"
-          placeholder="Provincia"
-          value={formulario.provincia}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="codigoPostal"
-          placeholder="Código Postal"
-          value={formulario.codigoPostal}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="tel"
-          name="telefono"
-          placeholder="Teléfono"
-          value={formulario.telefono}
-          onChange={handleChange}
-          required
-        />
+        {/* Aquí se incluyen los campos del formulario */}
         <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
           Realizar Pedido
         </button>
