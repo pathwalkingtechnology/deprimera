@@ -99,7 +99,7 @@ const ProductoList = () => {
               <p><strong>Nombre:</strong> {producto.nombre}</p>
               <p><strong>Descripción:</strong> {producto.descripcion}</p>
               <p><strong>Precio:</strong> ${producto.precio ? producto.precio.toFixed(2) : 'No disponible'}</p>
-              <p><strong>Categoría:</strong> {producto.categoria_nombre}</p>
+              <p><strong>Categoría:</strong> {Object.values(producto.categoria_nombre)[0]}</p>
                {producto.imagen && (
                 <Image
                   src={producto.imagen}
