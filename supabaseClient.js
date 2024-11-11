@@ -4,38 +4,29 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-// Cliente anónimo para operaciones regulares
-const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey);
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Las variables de entorno NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY son obligatorias.');
+}
 
-// Cliente de rol de servicio para operaciones protegidas
-const supabaseService = createClient(supabaseUrl, supabaseServiceRoleKey);
+const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey);
+const supabaseService = supabaseServiceRoleKey
+  ? createClient(supabaseUrl, supabaseServiceRoleKey)
+  : null;
 
 export { supabaseAnon, supabaseService };
 
-// Funciones para productos
+// Funciones de productos y categorías ajustadas para JavaScript
+
 export const fetchProducts = async () => {
-  const { data, error } = await supabaseAnon
-    .from('productos_deprimera')
-    .select('*, categoria_nombre:categorias_deprimera(nombre)');
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data;
+  const response = await fetch('/api/productos/read');
+  if (!response.ok) throw new Error('Error al cargar los productos');
+  return await response.json();
 };
 
 export const fetchProductById = async (id) => {
-  const { data, error } = await supabaseAnon
-    .from('productos_deprimera')
-    .select('*, categoria_nombre:categorias_deprimera(nombre)')
-    .eq('id', id)
-    .single();
-
-  if (error) {
-    throw new Error(error.message);
-  }
-  return data;
+  const response = await fetch(`/api/productos/read?id=${id}`);
+  if (!response.ok) throw new Error('Error al cargar el producto');
+  return await response.json();
 };
 
 export const addProduct = async (nombre, descripcion, precio, categoriaId, imageUrl) => {
@@ -45,36 +36,30 @@ export const addProduct = async (nombre, descripcion, precio, categoriaId, image
     body: JSON.stringify({ nombre, descripcion, precio, categoriaId, imageUrl })
   });
 
-  if (!response.ok) {
-    throw new Error('Error al agregar el producto');
-  }
-
+  if (!response.ok) throw new Error('Error al agregar el producto');
   return await response.json();
 };
 
-export const updateProduct = async (id, { nombre, descripcion, precio, imageUrl }) => {
-  const updates = { nombre, descripcion, precio };
-  if (imageUrl) updates.imagen = imageUrl;
+export const updateProduct = async (id, updates) => {
+  const response = await fetch('/api/productos/update', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, ...updates })
+  });
 
-  const { error } = await supabaseService
-    .from('productos_deprimera')
-    .update(updates)
-    .eq('id', id);
-
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (!response.ok) throw new Error('Error al actualizar el producto');
 };
 
 export const deleteProduct = async (id) => {
-  const { error } = await supabaseService.from('productos_deprimera').delete().eq('id', id);
+  const response = await fetch('/api/productos/delete', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id })
+  });
 
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (!response.ok) throw new Error('Error al eliminar el producto');
 };
 
-// Función para subir una imagen al bucket `imagenes-productos`
 export const uploadImage = async (file) => {
   const filePath = `${Date.now()}_${file.name}`;
   const { error: uploadError } = await supabaseService.storage
@@ -87,55 +72,44 @@ export const uploadImage = async (file) => {
   return publicUrl;
 };
 
-// Funciones para categorías
 export const fetchCategories = async () => {
-  const { data, error } = await supabaseAnon
-    .from('categorias_deprimera')
-    .select('id, nombre');
-
-  if (error) {
-    throw new Error('Error al cargar las categorías: ' + error.message);
-  }
-
-  return data;
+  const response = await fetch('/api/categorias/read');
+  if (!response.ok) throw new Error('Error al cargar las categorías');
+  return await response.json();
 };
 
 export const fetchCategoryById = async (id) => {
-  const { data, error } = await supabaseAnon
-    .from('categorias_deprimera')
-    .select('id, nombre')
-    .eq('id', id)
-    .single();
-
-  if (error) {
-    throw new Error(error.message);
-  }
-  return data;
+  const response = await fetch(`/api/categorias/read?id=${id}`);
+  if (!response.ok) throw new Error('Error al cargar la categoría');
+  return await response.json();
 };
 
 export const addCategory = async (nombre) => {
-  const { error } = await supabaseService.from('categorias_deprimera').insert([{ nombre }]);
+  const response = await fetch('/api/categorias/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nombre })
+  });
 
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (!response.ok) throw new Error('Error al agregar la categoría');
 };
 
 export const updateCategory = async (id, nombre) => {
-  const { error } = await supabaseService
-    .from('categorias_deprimera')
-    .update({ nombre })
-    .eq('id', id);
+  const response = await fetch('/api/categorias/update', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, nombre })
+  });
 
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (!response.ok) throw new Error('Error al actualizar la categoría');
 };
 
 export const deleteCategory = async (id) => {
-  const { error } = await supabaseService.from('categorias_deprimera').delete().eq('id', id);
+  const response = await fetch('/api/categorias/delete', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id })
+  });
 
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (!response.ok) throw new Error('Error al eliminar la categoría');
 };
