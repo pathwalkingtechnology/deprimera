@@ -23,8 +23,6 @@ const EditProduct = () => {
     categoria_nombre: { nombre: '' },
   });
   const [imagen, setImagen] = useState<File | null>(null);
-  // @ts-nocheck
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
   const { id } = router.query;
@@ -36,11 +34,9 @@ const EditProduct = () => {
           const product = await fetchProductById(id);
           if (product) {
             setProducto(product);
-          } else {
-            setError('Producto no encontrado');
-          }
+          } 
         } catch (error) {
-          setError('Error al cargar producto');
+          console.error('Error al cargar producto:', error);
         }
       };
       loadProduct();
@@ -49,14 +45,13 @@ const EditProduct = () => {
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
     setSuccess(null);
 
     try {
       let imageUrl = null;
       if (imagen) {
         if (!['image/jpeg', 'image/png'].includes(imagen.type)) {
-          setError('Solo se permiten imágenes en formato JPEG o PNG');
+          alert('Solo se permiten imágenes en formato JPEG o PNG');
           return;
         }
         imageUrl = await uploadImage(imagen);
@@ -72,7 +67,7 @@ const EditProduct = () => {
       
       setTimeout(() => router.push('/admin/productos'), 1000);
     } catch (error) {
-      setError(`Error al actualizar el producto: ${error.message}`);
+      console.error('Error al actualizar el producto:', error);
     }
   };
 
@@ -83,7 +78,6 @@ const EditProduct = () => {
   return (
     <div className="container">
       <h1>Editar Producto</h1>
-      {error && <p className="error">{error}</p>}
       {success && <p className="success">{success}</p>}
 
       <form onSubmit={handleUpdate} className="form">
