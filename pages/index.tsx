@@ -99,7 +99,6 @@ export default function Home({ productos }: Props) {
               <Image
   src={producto.imagen}
   alt={producto.nombre}
-  layout="responsive"
   width={400}
   height={300}
 />

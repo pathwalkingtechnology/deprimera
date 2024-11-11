@@ -3,7 +3,16 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['deprimera.vercel.app', 'vaahxtelpfefskctxiwr.supabase.co'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'deprimera.vercel.app',
+      },
+      {
+        protocol: 'https',
+        hostname: 'vaahxtelpfefskctxiwr.supabase.co',
+      },
+    ],
   },
 };
 
