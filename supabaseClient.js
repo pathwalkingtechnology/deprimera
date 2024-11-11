@@ -39,15 +39,17 @@ export const fetchProductById = async (id) => {
 };
 
 export const addProduct = async (nombre, descripcion, precio, categoriaId, imageUrl) => {
-  const { data, error } = await supabaseService
-    .from('productos_deprimera')
-    .insert([{ nombre, descripcion, precio, categoria_id: categoriaId, imagen: imageUrl }]);
+  const response = await fetch('/api/productos/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nombre, descripcion, precio, categoriaId, imageUrl })
+  });
 
-  if (error) {
-    throw new Error('Error al agregar el producto: ' + error.message);
+  if (!response.ok) {
+    throw new Error('Error al agregar el producto');
   }
 
-  return data;
+  return await response.json();
 };
 
 export const updateProduct = async (id, { nombre, descripcion, precio, imageUrl }) => {
