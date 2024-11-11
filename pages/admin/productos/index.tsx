@@ -79,12 +79,12 @@ const ProductoList = () => {
       const errorMessage = (error as Error).message || 'Error desconocido';
       console.error('Error al subir imagen:', errorMessage);
       setError('No se pudo subir la imagen.');
+      console.log(producto.categoria_nombre);
     }
   };
 
   if (loading) return <p>Cargando productos...</p>;
   if (error) return <p className="error">{error}</p>;
-
   return (
     <div className="container">
       <h1>Lista de Productos</h1>
@@ -99,8 +99,8 @@ const ProductoList = () => {
               <p><strong>Nombre:</strong> {producto.nombre}</p>
               <p><strong>Descripción:</strong> {producto.descripcion}</p>
               <p><strong>Precio:</strong> ${producto.precio ? producto.precio.toFixed(2) : 'No disponible'}</p>
-              <p><strong>Categoría:</strong> {producto.categoria_nombre}</p>
-              {producto.imagen && (
+              <p><strong>Categoría:</strong> {producto.categoria_nombre?.nombre}</p>
+               {producto.imagen && (
                 <Image
                   src={producto.imagen}
                   alt={producto.nombre}
