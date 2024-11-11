@@ -124,7 +124,7 @@ const EditProduct = () => {
             type="file"
             id="imagen"
             accept="image/jpeg, image/png"
-            onChange={(e) => setImagen(e.target.files[0])}
+            onChange={(e) => setImagen(e.target.files?.[0])}
             className="input-file"
           />
         </div>
