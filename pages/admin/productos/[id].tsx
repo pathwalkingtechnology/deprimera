@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { fetchProductById, updateProduct, uploadImage } from '../../../supabaseClient';
+import { fetchProductById, updateProduct, uploadImage, fetchCategories } from '../../../supabaseClient';
 
 interface Producto {
   id: number;
@@ -9,6 +9,11 @@ interface Producto {
   precio: number;
   imagen: string | null;
   categoria_id: number | null;
+}
+
+interface Categoria {
+  id: number;
+  nombre: string;
 }
 
 const EditProduct = () => {
@@ -21,7 +26,9 @@ const EditProduct = () => {
     categoria_id: null,
   });
   const [imagen, setImagen] = useState<File | null>(null);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [success, setSuccess] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { id } = router.query;
 
@@ -33,21 +40,33 @@ const EditProduct = () => {
           if (product) setProducto(product);
         } catch (error) {
           console.error('Error al cargar producto:', error);
+          setError('No se pudo cargar el producto');
         }
       }
     };
+    const loadCategories = async () => {
+      try {
+        const data = await fetchCategories();
+        setCategorias(data);
+      } catch (error) {
+        console.error('Error al cargar categorías:', error);
+        setError('No se pudieron cargar las categorías');
+      }
+    };
     loadProduct();
+    loadCategories();
   }, [id]);
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSuccess(null);
+    setError(null);
 
     try {
       let imageUrl = producto.imagen;
       if (imagen) {
         if (!['image/jpeg', 'image/png'].includes(imagen.type)) {
-          alert('Solo se permiten imágenes en formato JPEG o PNG');
+          setError('Solo se permiten imágenes en formato JPEG o PNG');
           return;
         }
         imageUrl = await uploadImage(imagen);
@@ -65,16 +84,22 @@ const EditProduct = () => {
       setTimeout(() => router.push('/admin/productos'), 1000);
     } catch (error) {
       console.error('Error al actualizar el producto:', error);
+      setError('Error al actualizar el producto');
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setProducto({ ...producto, [e.target.name]: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setProducto((prev) => ({
+      ...prev,
+      [name]: name === 'precio' ? parseFloat(value) : value,
+    }));
   };
 
   return (
     <div className="container">
       <h1>Editar Producto</h1>
+      {error && <p className="error">{error}</p>}
       {success && <p className="success">{success}</p>}
 
       <form onSubmit={handleUpdate} className="form">
@@ -113,6 +138,25 @@ const EditProduct = () => {
             required
             className="input"
           />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="categoria_id">Categoría:</label>
+          <select
+            id="categoria_id"
+            name="categoria_id"
+            value={producto.categoria_id || ''}
+            onChange={handleChange}
+            required
+            className="select"
+          >
+            <option value="">Seleccione una categoría</option>
+            {categorias.map((categoria) => (
+              <option key={categoria.id} value={categoria.id}>
+                {categoria.nombre}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="form-group">

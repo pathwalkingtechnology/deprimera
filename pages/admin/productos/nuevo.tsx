@@ -1,3 +1,5 @@
+
+
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/router';
 import { addProduct, uploadImage, fetchCategories } from '../../../supabaseClient';
@@ -18,6 +20,7 @@ const NewProduct = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const router = useRouter();
 
+  // Cargar categorías al montar el componente
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -25,11 +28,13 @@ const NewProduct = () => {
         setCategorias(data);
       } catch (error) {
         console.error('Error al cargar categorías:', error);
+        setError('No se pudieron cargar las categorías');
       }
     };
     loadCategories();
   }, []);
 
+  // Manejar el envío del formulario
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
@@ -38,7 +43,7 @@ const NewProduct = () => {
     try {
       let imageUrl: string | null = null;
       if (imagen) {
-        imageUrl = await uploadImage(imagen);
+        imageUrl = await uploadImage(imagen);  // Subir imagen y obtener URL
       }
 
       await addProduct({
@@ -46,16 +51,18 @@ const NewProduct = () => {
         descripcion,
         precio: parseFloat(precio),
         categoria_id: parseInt(categoriaId),
-        imagen: imageUrl
+        imagen: imageUrl,
       });
 
       setSuccess('Producto agregado exitosamente');
-      setTimeout(() => router.push('/admin/productos'), 1000);
+      setTimeout(() => router.push('/admin/productos'), 1000); // Redirigir tras 1 segundo
     } catch (error) {
-      setError('Error al agregar el producto: ' + (error as Error).message);
+      const errorMessage = (error as Error).message || 'Error desconocido';
+      setError('Error al agregar el producto: ' + errorMessage);
     }
   };
 
+  // Manejar cambio de imagen
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImagen(e.target.files[0]);
@@ -129,8 +136,7 @@ const NewProduct = () => {
         </div>
 
         <button type="submit" className="submit-btn">Agregar Producto</button>
-      </form>
-      <style jsx>{`
+      </form> <style jsx>{`
         .container {
           max-width: 600px;
           margin: 0 auto;
@@ -188,6 +194,7 @@ const NewProduct = () => {
           background-color: #008fc9;
         }
       `}</style>
+      
     </div>
   );
 };
